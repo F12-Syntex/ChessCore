@@ -3,6 +3,7 @@ package com.chess.chess;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 import com.chess.engine.Engine;
 import com.chess.entities.AutoJoin;
@@ -21,6 +22,8 @@ import com.chess.entities.GraphicEntity;
 @AutoJoin
 public class ChessBoard extends GraphicEntity{
 
+  private Rectangle bounds = new Rectangle();
+
   public ChessBoard(Engine engine) {
     super(engine);
   }
@@ -29,7 +32,12 @@ public class ChessBoard extends GraphicEntity{
   public void render(Graphics g) {
       // Get the size of the screen
       Dimension size = this.engine.getSize();
-  
+      System.out.println("size: " + size);
+
+      //int red = ThreadLocalRandom.current().nextInt(100, 255);
+      //int blue = ThreadLocalRandom.current().nextInt(100, 255);
+      //int green = ThreadLocalRandom.current().nextInt(100, 255);
+
       Color initColor = Color.gray;
   
       // Calculate the size of each square on the board
@@ -59,8 +67,10 @@ public class ChessBoard extends GraphicEntity{
           }
       }
       
+      this.bounds = new Rectangle(0, 0, squareSize*8, squareSize);
+
       // Draw a border around the chess board
-      g.setColor(Color.BLACK);
+      g.setColor(Color.black);
       g.drawRect(0, 0, 8 * squareSize, 8 * squareSize);
   }
   
@@ -69,5 +79,18 @@ public class ChessBoard extends GraphicEntity{
     @Override
     public void tick() {
 
+    }
+
+    /**
+     * @return the bounds
+     */
+    public Rectangle getBounds() {
+        return this.bounds;
+    }
+
+    
+    @Override
+    public int getPriority() {
+        return 2;
     }
 }

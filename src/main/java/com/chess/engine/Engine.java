@@ -1,5 +1,7 @@
 package com.chess.engine;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -38,6 +40,8 @@ public class Engine extends JPanel implements WindowListener{
 
 	private FrameRate fps;
 	private AtomicBoolean running = new AtomicBoolean(true);
+
+	private BorderLayout layout = new BorderLayout();
 	
 	/* threads */
 	private Thread processThread;
@@ -54,18 +58,21 @@ public class Engine extends JPanel implements WindowListener{
 		this.setFocusable(true);
 		this.requestFocus();
 		
+		this.setLayout(this.layout);
+		this.fps = new FrameRate();
+
 		this.loadEntities();
-		
-		
 		
 		this.processThread = new Thread(() -> {
 			this.run();
 		});
-		
+
 		this.threadHandler.submit(this.processThread);
-		
+	
+		this.setBackground(Color.gray);
 	}
 	
+
 	/*
 	 * Loads all the entities in the game.
 	 * @return the worker thread
@@ -89,7 +96,10 @@ public class Engine extends JPanel implements WindowListener{
 	    synchronized(this.entities) {
 	    	this.entities.stream()
 			 			 .sorted((a, b) -> a.getPriority() - b.getPriority())
-			 			 .forEach(o -> o.render(g));	
+			 			 .forEach(o -> {
+							o.render(g);
+							System.out.println("rendering: " + o.getClass().getSimpleName() + " at " + o.getPriority());
+						});	
 		}
 	    
 	}
@@ -115,12 +125,13 @@ public class Engine extends JPanel implements WindowListener{
 	 */
 	public void run(){
 	    long lastTime = System.nanoTime();
-	    
+
+	
 	    double amountOfTicks = Configuration.MAX_FPS;
-	    double ns = 1000000000/amountOfTicks;
-	    double delta = 0;
-	    long timer = System.currentTimeMillis();
-	    this.fps.reset();
+		double ns = 1000000000/amountOfTicks;
+		double delta = 0;
+		long timer = System.currentTimeMillis();
+		this.fps.reset();
 
 	    long renderLastTime=System.nanoTime();
 	    double renderNs=1000000000/amountOfTicks;
@@ -156,7 +167,7 @@ public class Engine extends JPanel implements WindowListener{
 	 */
 	public void tick() {
 	    for(GraphicEntity entity : entities) {
-	    	entity.tick();
+			entity.tick();
 	    }
 	}
 	
@@ -226,11 +237,23 @@ public class Engine extends JPanel implements WindowListener{
 		this.fps = fps;
 	}
 
+	/*
+	 * returns the isntance of the entity specified by the class.
+	 * @param clazz the class of the entity
+	 * @return the entity
+	 */
+	public <T extends GraphicEntity> T getGraphicEntity(Class<T> clazz) {
+		return this.entities.stream()
+			.filter(o -> clazz.isInstance(o))
+			.map(clazz::cast)
+			.findFirst()
+			.orElse(null);
+	}
+
 	@Override
 	public void windowClosing(WindowEvent e) {
 		this.close();
 	}
-
 
 	@Override
 	public void windowOpened(WindowEvent e) {}
