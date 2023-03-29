@@ -8,6 +8,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.logging.Logger;
 
+import javax.swing.JComponent;
 import javax.swing.event.MouseInputListener;
 
 import com.chess.engine.Engine;
@@ -18,7 +19,7 @@ import com.chess.engine.Engine;
  * @version 1.0
  * @since 1.0
  */
-public abstract class GraphicEntity implements MouseInputListener, KeyListener, MouseWheelListener{
+public abstract class GraphicEntity extends JComponent implements MouseInputListener, KeyListener, MouseWheelListener{
 
 	protected Engine engine;
 	private final Logger logger = Logger.getGlobal();
@@ -29,7 +30,6 @@ public abstract class GraphicEntity implements MouseInputListener, KeyListener, 
 		this.engine.setPreferredSize(null);
 	}
 
-	public abstract void render(Graphics g);
 	public abstract void tick();
 	
 	/**

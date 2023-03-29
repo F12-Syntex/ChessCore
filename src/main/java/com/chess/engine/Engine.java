@@ -2,7 +2,10 @@ package com.chess.engine;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.LayoutManager;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.lang.reflect.Constructor;
@@ -14,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import org.reflections.Reflections;
@@ -41,7 +45,7 @@ public class Engine extends JPanel implements WindowListener{
 	private FrameRate fps;
 	private AtomicBoolean running = new AtomicBoolean(true);
 
-	private BorderLayout layout = new BorderLayout();
+	private BoxLayout layout = new BoxLayout(this, BoxLayout.X_AXIS);
 	
 	/* threads */
 	private Thread processThread;
@@ -59,17 +63,19 @@ public class Engine extends JPanel implements WindowListener{
 		this.requestFocus();
 		
 		this.setLayout(this.layout);
+
 		this.fps = new FrameRate();
 
 		this.loadEntities();
-		
-		this.processThread = new Thread(() -> {
-			this.run();
-		});
-
-		this.threadHandler.submit(this.processThread);
 	
 		this.setBackground(Color.gray);
+
+		//this.processThread = new Thread(() -> {
+			//this.run();
+		//});
+
+		//this.threadHandler.submit(this.processThread);
+	
 	}
 	
 
@@ -93,14 +99,16 @@ public class Engine extends JPanel implements WindowListener{
 	protected void paintComponent(Graphics g) {
 	    super.paintComponent(g);
 	    
+		/* 
 	    synchronized(this.entities) {
 	    	this.entities.stream()
 			 			 .sorted((a, b) -> a.getPriority() - b.getPriority())
 			 			 .forEach(o -> {
-							o.render(g);
-							System.out.println("rendering: " + o.getClass().getSimpleName() + " at " + o.getPriority());
+							o.repaint();
+							System.out.println("rendering: " + o.getClass().getSimpleName() + " at " + o.getPriority()); 
 						});	
 		}
+		*/
 	    
 	}
 	
@@ -138,6 +146,7 @@ public class Engine extends JPanel implements WindowListener{
 	    double renderDelta = 0;
 
 	    while(this.running.get()){
+
 	        long now = System.nanoTime();
 	        delta += (now - lastTime) / ns;
 	        lastTime = now;
@@ -175,7 +184,7 @@ public class Engine extends JPanel implements WindowListener{
 	 * render every entity.
 	 */
 	public void render() {
-		repaint();
+		this.repaint();
 	}
 	
 	/*
@@ -211,7 +220,9 @@ public class Engine extends JPanel implements WindowListener{
 			        Constructor<? extends GraphicEntity> constructor = clazz.getConstructor(Engine.class);
 			        GraphicEntity entity = constructor.newInstance(this);
 			       
+					this.logger.info(">>>>>>>>>>>" + entity.getClass().getSimpleName() + " loaded");
 			        this.entities.add(entity);
+					this.add(entity);
 		    		
 		    	}
 		    	

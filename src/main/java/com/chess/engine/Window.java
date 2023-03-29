@@ -17,7 +17,7 @@ import com.chess.configuration.Configuration;
  */
 public class Window extends JFrame implements ComponentListener{
 
-	public static final Dimension DIMENSION = new Dimension(8*130, 8*130);
+	public static final Dimension DIMENSION = new Dimension(1016, 1040);
 	
 	public Window() {
 		

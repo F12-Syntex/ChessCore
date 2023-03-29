@@ -28,53 +28,50 @@ public class ChessBoard extends GraphicEntity{
     super(engine);
   }
 
-  @Override
-  public void render(Graphics g) {
-      // Get the size of the screen
-      Dimension size = this.engine.getSize();
-      System.out.println("size: " + size);
-
-      //int red = ThreadLocalRandom.current().nextInt(100, 255);
-      //int blue = ThreadLocalRandom.current().nextInt(100, 255);
-      //int green = ThreadLocalRandom.current().nextInt(100, 255);
-
-      Color initColor = Color.gray;
-  
-      // Calculate the size of each square on the board
-      int squareSize = Math.min(size.width, size.height) / 8;
-  
-      // Loop through each row and column to draw the squares
-      for (int row = 0; row < 8; row++) {
-          for (int col = 0; col < 8; col++) {
-              // Calculate the x and y coordinates for the current square
-              int x = col * squareSize;
-              int y = row * squareSize;
-  
-              // Check whether the row and column are even or odd
-              boolean isEvenRow = row % 2 == 0;
-              boolean isEvenCol = col % 2 == 0;
-              boolean isEvenSquare = isEvenRow == isEvenCol;
-  
-              // Set the color of the square based on whether it's even or odd
-              if (isEvenSquare) {
-                  g.setColor(initColor);
-              } else {
-                  g.setColor(initColor.darker());
-              }
-  
-              // Draw the square
-              g.fillRect(x, y, squareSize, squareSize);
-          }
-      }
-      
-      this.bounds = new Rectangle(0, 0, squareSize*8, squareSize);
-
-      // Draw a border around the chess board
-      g.setColor(Color.black);
-      g.drawRect(0, 0, 8 * squareSize, 8 * squareSize);
+  public void paintComponent(Graphics g) {
+      super.paintComponent(g);
+       // Get the size of the screen
+       Dimension size = this.engine.getSize();
+ 
+       //int red = ThreadLocalRandom.current().nextInt(100, 255);
+       //int blue = ThreadLocalRandom.current().nextInt(100, 255);
+       //int green = ThreadLocalRandom.current().nextInt(100, 255);
+ 
+       Color initColor = Color.gray;
+   
+       // Calculate the size of each square on the board
+       int squareSize = Math.min(size.width, size.height) / 8;
+   
+       // Loop through each row and column to draw the squares
+       for (int row = 0; row < 8; row++) {
+           for (int col = 0; col < 8; col++) {
+               // Calculate the x and y coordinates for the current square
+               int x = col * squareSize;
+               int y = row * squareSize;
+   
+               // Check whether the row and column are even or odd
+               boolean isEvenRow = row % 2 == 0;
+               boolean isEvenCol = col % 2 == 0;
+               boolean isEvenSquare = isEvenRow == isEvenCol;
+   
+               // Set the color of the square based on whether it's even or odd
+               if (isEvenSquare) {
+                   g.setColor(initColor);
+               } else {
+                   g.setColor(initColor.darker());
+               }
+   
+               // Draw the square
+               g.fillRect(x, y, squareSize, squareSize);
+           }
+       }
+       
+       this.bounds = new Rectangle(0, 0, squareSize*8, squareSize);
+ 
+       // Draw a border around the chess board
+       g.setColor(Color.black);
+       g.drawRect(0, 0, 8 * squareSize, 8 * squareSize);
   }
-  
-
 
     @Override
     public void tick() {
