@@ -1,6 +1,11 @@
 package com.chess.engine;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.LayoutManager;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.lang.reflect.Constructor;
@@ -12,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import org.reflections.Reflections;
@@ -20,6 +26,8 @@ import com.chess.configuration.Configuration;
 import com.chess.controller.InputController;
 import com.chess.entities.AutoJoin;
 import com.chess.entities.GraphicEntity;
+import com.chess.spritesheet.SpriteSheet;
+import com.chess.spritesheet.SpriteSheetLoader;
 
 /**
  * this class handles the graphics of the game.
@@ -38,6 +46,8 @@ public class Engine extends JPanel implements WindowListener{
 
 	private FrameRate fps;
 	private AtomicBoolean running = new AtomicBoolean(true);
+
+	private BoxLayout layout = new BoxLayout(this, BoxLayout.X_AXIS);
 	
 	/* threads */
 	private Thread processThread;
@@ -54,18 +64,26 @@ public class Engine extends JPanel implements WindowListener{
 		this.setFocusable(true);
 		this.requestFocus();
 		
+		this.setLayout(this.layout);
+
+		this.fps = new FrameRate();
+
 		this.loadEntities();
-		
-		
-		
+	
+		this.setBackground(Color.gray);
+
+		SpriteSheetLoader loader = new SpriteSheetLoader();
+		loader.loadSpriteSheets();
+
 		this.processThread = new Thread(() -> {
 			this.run();
 		});
-		
+
 		this.threadHandler.submit(this.processThread);
-		
+	
 	}
 	
+
 	/*
 	 * Loads all the entities in the game.
 	 * @return the worker thread
@@ -85,14 +103,8 @@ public class Engine extends JPanel implements WindowListener{
 	@Override
 	protected void paintComponent(Graphics g) {
 	    super.paintComponent(g);
-	    
-	    synchronized(this.entities) {
-	    	this.entities.stream()
-			 			 .sorted((a, b) -> a.getPriority() - b.getPriority())
-			 			 .forEach(o -> o.render(g));	
-		}
-	    
 	}
+
 	
 	/*
 	 * exits the game.
@@ -115,18 +127,20 @@ public class Engine extends JPanel implements WindowListener{
 	 */
 	public void run(){
 	    long lastTime = System.nanoTime();
-	    
+
+	
 	    double amountOfTicks = Configuration.MAX_FPS;
-	    double ns = 1000000000/amountOfTicks;
-	    double delta = 0;
-	    long timer = System.currentTimeMillis();
-	    this.fps.reset();
+		double ns = 1000000000/amountOfTicks;
+		double delta = 0;
+		long timer = System.currentTimeMillis();
+		this.fps.reset();
 
 	    long renderLastTime=System.nanoTime();
 	    double renderNs=1000000000/amountOfTicks;
 	    double renderDelta = 0;
 
 	    while(this.running.get()){
+
 	        long now = System.nanoTime();
 	        delta += (now - lastTime) / ns;
 	        lastTime = now;
@@ -156,7 +170,7 @@ public class Engine extends JPanel implements WindowListener{
 	 */
 	public void tick() {
 	    for(GraphicEntity entity : entities) {
-	    	entity.tick();
+			entity.tick();
 	    }
 	}
 	
@@ -164,7 +178,14 @@ public class Engine extends JPanel implements WindowListener{
 	 * render every entity.
 	 */
 	public void render() {
-		repaint();
+		synchronized(this.entities) {
+	    	this.entities.stream()
+			 			 .sorted((a, b) -> a.getPriority() - b.getPriority())
+			 			 .forEach(o -> {
+							o.repaint();
+							//System.out.println("rendering: " + o.getClass().getSimpleName() + " at " + o.getPriority()); 
+						});
+		}	
 	}
 	
 	/*
@@ -200,7 +221,8 @@ public class Engine extends JPanel implements WindowListener{
 			        Constructor<? extends GraphicEntity> constructor = clazz.getConstructor(Engine.class);
 			        GraphicEntity entity = constructor.newInstance(this);
 			       
-			        this.entities.add(entity);
+					this.entities.add(entity);
+					this.add(entity);
 		    		
 		    	}
 		    	
@@ -226,11 +248,23 @@ public class Engine extends JPanel implements WindowListener{
 		this.fps = fps;
 	}
 
+	/*
+	 * returns the isntance of the entity specified by the class.
+	 * @param clazz the class of the entity
+	 * @return the entity
+	 */
+	public <T extends GraphicEntity> T getGraphicEntity(Class<T> clazz) {
+		return this.entities.stream()
+			.filter(o -> clazz.isInstance(o))
+			.map(clazz::cast)
+			.findFirst()
+			.orElse(null);
+	}
+
 	@Override
 	public void windowClosing(WindowEvent e) {
 		this.close();
 	}
-
 
 	@Override
 	public void windowOpened(WindowEvent e) {}

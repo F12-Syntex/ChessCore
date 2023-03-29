@@ -3,6 +3,8 @@ package com.chess.engine;
 import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
@@ -17,15 +19,22 @@ import com.chess.configuration.Configuration;
  */
 public class Window extends JFrame implements ComponentListener{
 
-	public static final Dimension DIMENSION = new Dimension(1612, 1069);
+	public static final Dimension DIMENSION = new Dimension(1016, 1040);
 	
 	public Window() {
 		
 		// set the title and size of the window
 		this.setTitle(Configuration.NAME + " v" + Configuration.VERSION);
 		this.setSize(DIMENSION);
-		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setLocationRelativeTo(null);
+
+		this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                dispose();
+                System.exit(0);
+            }
+        });
 
 	}
 
