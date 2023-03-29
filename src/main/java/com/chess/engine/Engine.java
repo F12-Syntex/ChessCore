@@ -26,6 +26,8 @@ import com.chess.configuration.Configuration;
 import com.chess.controller.InputController;
 import com.chess.entities.AutoJoin;
 import com.chess.entities.GraphicEntity;
+import com.chess.spritesheet.SpriteSheet;
+import com.chess.spritesheet.SpriteSheetLoader;
 
 /**
  * this class handles the graphics of the game.
@@ -70,11 +72,14 @@ public class Engine extends JPanel implements WindowListener{
 	
 		this.setBackground(Color.gray);
 
-		//this.processThread = new Thread(() -> {
-			//this.run();
-		//});
+		SpriteSheetLoader loader = new SpriteSheetLoader();
+		loader.loadSpriteSheets();
 
-		//this.threadHandler.submit(this.processThread);
+		this.processThread = new Thread(() -> {
+			this.run();
+		});
+
+		this.threadHandler.submit(this.processThread);
 	
 	}
 	
@@ -98,19 +103,8 @@ public class Engine extends JPanel implements WindowListener{
 	@Override
 	protected void paintComponent(Graphics g) {
 	    super.paintComponent(g);
-	    
-		/* 
-	    synchronized(this.entities) {
-	    	this.entities.stream()
-			 			 .sorted((a, b) -> a.getPriority() - b.getPriority())
-			 			 .forEach(o -> {
-							o.repaint();
-							System.out.println("rendering: " + o.getClass().getSimpleName() + " at " + o.getPriority()); 
-						});	
-		}
-		*/
-	    
 	}
+
 	
 	/*
 	 * exits the game.
@@ -184,7 +178,14 @@ public class Engine extends JPanel implements WindowListener{
 	 * render every entity.
 	 */
 	public void render() {
-		this.repaint();
+		synchronized(this.entities) {
+	    	this.entities.stream()
+			 			 .sorted((a, b) -> a.getPriority() - b.getPriority())
+			 			 .forEach(o -> {
+							o.repaint();
+							//System.out.println("rendering: " + o.getClass().getSimpleName() + " at " + o.getPriority()); 
+						});
+		}	
 	}
 	
 	/*
@@ -220,8 +221,7 @@ public class Engine extends JPanel implements WindowListener{
 			        Constructor<? extends GraphicEntity> constructor = clazz.getConstructor(Engine.class);
 			        GraphicEntity entity = constructor.newInstance(this);
 			       
-					this.logger.info(">>>>>>>>>>>" + entity.getClass().getSimpleName() + " loaded");
-			        this.entities.add(entity);
+					this.entities.add(entity);
 					this.add(entity);
 		    		
 		    	}
