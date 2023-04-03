@@ -126,43 +126,46 @@ public class Engine extends JPanel implements WindowListener{
 	 * the main game loop.
 	 */
 	public void run(){
-	    long lastTime = System.nanoTime();
+		try{
+			long lastTime = System.nanoTime();
 
-	
-	    double amountOfTicks = Configuration.MAX_FPS;
-		double ns = 1000000000/amountOfTicks;
-		double delta = 0;
-		long timer = System.currentTimeMillis();
-		this.fps.reset();
+			double amountOfTicks = Configuration.MAX_FPS;
+			double ns = 1000000000/amountOfTicks;
+			double delta = 0;
+			long timer = System.currentTimeMillis();
+			this.fps.reset();
 
-	    long renderLastTime=System.nanoTime();
-	    double renderNs=1000000000/amountOfTicks;
-	    double renderDelta = 0;
+			long renderLastTime=System.nanoTime();
+			double renderNs=1000000000/amountOfTicks;
+			double renderDelta = 0;
 
-	    while(this.running.get()){
+			while(this.running.get()){
 
-	        long now = System.nanoTime();
-	        delta += (now - lastTime) / ns;
-	        lastTime = now;
-	        while(delta >= 1){
-	            tick();
-	            delta--;
-	        }
+				long now = System.nanoTime();
+				delta += (now - lastTime) / ns;
+				lastTime = now;
+				while(delta >= 1){
+					tick();
+					delta--;
+				}
 
-	        now = System.nanoTime();
-	        renderDelta += (now - renderLastTime) / renderNs;
-	        renderLastTime = now;
-	        while(this.running.get() && renderDelta >= 1){
-	            render();
-	            this.fps.increment();
-	            renderDelta--;
-	        }
+				now = System.nanoTime();
+				renderDelta += (now - renderLastTime) / renderNs;
+				renderLastTime = now;
+				while(this.running.get() && renderDelta >= 1){
+					render();
+					this.fps.increment();
+					renderDelta--;
+				}
 
-	        if(System.currentTimeMillis() - timer > 1000){
-	            timer += 1000;
-	            this.fps.reset();
-	        }
-	    }
+				if(System.currentTimeMillis() - timer > 1000){
+					timer += 1000;
+					this.fps.reset();
+				}
+			}
+		}catch(Throwable e) {
+			e.printStackTrace();
+		}
 	}
 
 	/*
@@ -227,6 +230,7 @@ public class Engine extends JPanel implements WindowListener{
 		    	}
 		    	
 		    } catch (Exception e) {
+				System.err.println("error loading entity: " + clazz.getSimpleName());
 		    	e.printStackTrace();
 		    }
 		}

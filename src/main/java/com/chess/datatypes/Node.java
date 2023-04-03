@@ -38,6 +38,12 @@ public class Node extends Point{
 				return true;
 			}
 		}
+		if(obj instanceof Node) {
+			Node p = (Node)obj;
+			if(p.x == this.x && p.y == this.y) {
+				return true;
+			}
+		}
 		
 		return false;
 	}
