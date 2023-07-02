@@ -5,6 +5,10 @@ import java.awt.image.BufferedImage;
 
 import javax.annotation.Nonnull;
 
+/**
+ * This enum is used to define the classic chest background.
+ */
+
 public enum SpriteSheet {
 	DEFUALT_CHESS_PIECE_THEME("C:\\Users\\synte\\OneDrive - University of Kent\\Desktop\\chess\\default_theme\\classic_theme.png", new SpriteSheetProperties(true, 320, 426));
     

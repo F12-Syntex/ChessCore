@@ -7,6 +7,10 @@ import java.util.Set;
 import com.chess.chess.ChessBoard;
 import com.chess.datatypes.Node;
 
+/**
+ * Defines a class (Bishop) that extends the class (ChessPiece)
+ */
+
 public class Bishop extends ChessPiece {
 
     public Bishop(ChessBoard chessboard, PieceColour colour) {

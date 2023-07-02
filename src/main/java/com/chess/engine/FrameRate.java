@@ -1,7 +1,7 @@
 package com.chess.engine;
 
 /*
- * 
+ * This class handles the frame rate of the game, ensuring a smooth gameplay.
  */
 public class FrameRate {
 
