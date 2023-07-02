@@ -11,6 +11,10 @@ import javax.imageio.ImageIO;
 
 import com.chess.datatypes.Node;
 
+/**
+ * Defines a class that loads the sprite sheet (background theme of the chess game).
+ */
+
 public class SpriteSheetLoader {
 	
 	private final File root;

@@ -7,6 +7,10 @@ import java.util.Set;
 import com.chess.chess.ChessBoard;
 import com.chess.datatypes.Node;
 
+/**
+ * Defines a class (Rook) that extends the class (ChessPiece)
+ */
+
 public class Rook extends ChessPiece{
 
     public Rook(ChessBoard chessboard, PieceColour colour) {
